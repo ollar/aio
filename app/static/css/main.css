@@ -1,0 +1,194 @@
+body {
+    font-family: Georgia, Times, "Times New Roman", serif;
+    font-size: 16px;
+    line-height: 1.5em;
+}
+
+a {
+    text-decoration: underline;
+    color: deepskyblue;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+.center-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1em;
+}
+
+.add-stub {
+    display: inline-block;
+    height: 1em;
+    width: 1em;
+    border: 2px solid;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 100%;
+    line-height: 1em;
+}
+
+.list {
+    padding: 0;
+    margin: 0;
+}
+
+.list li {
+    display: flex;
+    margin: 5px 0;
+    align-items: center;
+}
+
+.list .title {
+    margin-right: auto;
+}
+
+.list .delete {
+    background-color: crimson;
+    color: white;
+    margin: 0 0 0 1em;
+}
+
+.list .delete:hover {
+    background-color: mediumvioletred;
+}
+
+/* ===================================================================== Form */
+
+.form-line {
+    margin: 1em 0;
+}
+
+.form-line label {
+    display: block;
+    font-weight: bold;
+}
+
+.buttons-wrapper {
+    margin: 2em 0;
+}
+
+button {
+    padding: 5px 10px;
+    border: none;
+    background-color: teal;
+    color: white;
+}
+
+button:hover {
+    background-color: deeppink;
+}
+
+button:active {
+    background-color: black;
+}
+
+input[type="color"],
+input[type="date"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="email"],
+input[type="month"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+input[type="tel"],
+input[type="text"],
+input[type="time"],
+input[type="url"],
+input[type="week"],
+input:not([type]),
+textarea {
+  border: 1px solid darkgray;
+  padding: 5px;
+  font-family: monospace;
+}
+
+input[type="color"]:focus,
+input[type="date"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="email"]:focus,
+input[type="month"]:focus,
+input[type="number"]:focus,
+input[type="password"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="text"]:focus,
+input[type="time"]:focus,
+input[type="url"]:focus,
+input[type="week"]:focus,
+input:not([type]):focus,
+textarea:focus,
+input[type="color"]:hover,
+input[type="date"]:hover,
+input[type="datetime"]:hover,
+input[type="datetime-local"]:hover,
+input[type="email"]:hover,
+input[type="month"]:hover,
+input[type="number"]:hover,
+input[type="password"]:hover,
+input[type="search"]:hover,
+input[type="tel"]:hover,
+input[type="text"]:hover,
+input[type="time"]:hover,
+input[type="url"]:hover,
+input[type="week"]:hover,
+input:not([type]):hover,
+textarea:hover {
+  border: 1px solid black;
+}
+
+input[type="color"]:active,
+input[type="date"]:active,
+input[type="datetime"]:active,
+input[type="datetime-local"]:active,
+input[type="email"]:active,
+input[type="month"]:active,
+input[type="number"]:active,
+input[type="password"]:active,
+input[type="search"]:active,
+input[type="tel"]:active,
+input[type="text"]:active,
+input[type="time"]:active,
+input[type="url"]:active,
+input[type="week"]:active,
+input:not([type]):active,
+textarea:active {
+  border: 1px solid deepskyblue;
+}
+
+/* ============================================================== update stub */
+
+.update-stub-form {
+
+}
+
+.update-stub-form input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.update-stub-form textarea {
+    width: 100%;
+    height: 500px;
+    box-sizing: border-box;
+}
+
+/* ================================================================== Flashes */
+
+.flashes {
+    margin: 1em 0;
+    padding: 0
+}
+
+.flashes li {
+    display: block;
+    color: teal;
+}
+
+.flashes li.error {
+    color: crimson;
+}

@@ -1,0 +1,25 @@
+{% extends "index.html" %}
+
+{% block content %}
+<h1>{{title}}</h1>
+
+<form action="{{action_url}}" method="POST" class="update-stub-form" id="update-stub">
+    <input type="hidden" name="id" value="{{stub[0]}}">
+    <div class="form-line">
+        <label for="url">URL</label>
+        <input type="text" name="url" id="url" value="{{stub[1]}}">
+    </div>
+
+    <div class="form-line">
+        <label for="content">Content</label>
+        <textarea name="content" id="content">{{stub[2]}}</textarea>
+    </div>
+
+    <div class="buttons-wrapper">
+        <button class="submit" type="submit">
+            Submit
+        </button>
+    </div>
+
+</form>
+{% endblock %}

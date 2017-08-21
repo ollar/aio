@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>List of url stubs <a class="add-stub" href="{{url_for('addStub')}}">&plus;</a></h1>
+
+    {% if urls|length > 0 %}
+        <ul class="list">
+            {% for url in urls %}
+                <li id="{{url[0]}}">
+                    <span class="title">
+                        <a href="{{url_for('stub', stubbed_url=url[1])}}">{{url[1]}}</a>
+                    </span>
+
+                    <a href="{{url_for('editStub', stubbed_url=url[1])}}">Edit</a>
+
+                    <form action="{{url_for('stub', stubbed_url=url[1])}}" method="POST">
+                        <input type="hidden" name="id" value="{{url[0]}}">
+                        <input type="hidden" name="_method" value="DELETE">
+
+                        <button class="delete" type="submit">Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        No stubs yet
+    {% endif %}
+
+{% endblock %}
