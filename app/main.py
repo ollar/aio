@@ -1,5 +1,6 @@
 from pathlib import Path
 from aiohttp import web
+import aiohttp_session
 import aiohttp_jinja2
 import jinja2
 from aiohttp_jinja2 import APP_KEY as JINJA2_APP_KEY
@@ -74,9 +75,23 @@ def static_url(context, static_file_path):
         raise RuntimeError('app does not define a static root url "static_root_url"')
     return '{}/{}'.format(static_url.rstrip('/'), static_file_path.lstrip('/'))
 
+
+@jinja2.contextfunction
+def test(context):
+    # session = aiohttp_session.get_session(context)
+
+    print('abc', dir(context['app']))
+    return 'aaaaaa'
+
+
+session_middleware = aiohttp_session.session_middleware(
+    aiohttp_session.SimpleCookieStorage()
+)
+
 app = web.Application(
     middlewares=[
-        connect_db
+        connect_db,
+        session_middleware
     ]
 )
 
@@ -92,4 +107,8 @@ aiohttp_jinja2.setup(app, loader=jinja2_loader, app_key=JINJA2_APP_KEY)
 app[JINJA2_APP_KEY].filters.update(
     url=reverse_url,
     static=static_url,
+)
+
+app[JINJA2_APP_KEY].globals.update(
+    test=test
 )

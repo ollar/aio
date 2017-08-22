@@ -4,13 +4,18 @@ import datetime
 import sqlite3
 import json
 import pdb
+from aiohttp_session import get_session
 
 
 @aiohttp_jinja2.template('home.html')
-def index(request):
+async def index(request):
     cursor = request.app['db_cursor']
     cursor.execute("select * from stubs")
     urls = cursor.fetchall()
+
+    session = await get_session(request)
+
+    # print(session)
 
     return {
         "urls": urls

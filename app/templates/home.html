@@ -1,6 +1,7 @@
 {% extends "index.html" %}
 
 {% block content %}
+    {{test()}}
     <h1>List of url stubs <a class="add-stub" href="{{'add_stub'|url}}">&plus;</a></h1>
 
     {% if urls|length > 0 %}
