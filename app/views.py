@@ -2,7 +2,9 @@ from aiohttp import web
 import aiohttp_jinja2
 import datetime
 import sqlite3
+import json
 import pdb
+
 
 @aiohttp_jinja2.template('home.html')
 def index(request):
@@ -15,114 +17,174 @@ def index(request):
     }
 
 
-@aiohttp_jinja2.template('updateStub.html')
-def add_stub_get(request):
-    action_url = request.app.router['add_stub_get'].url_for()
+class AddStub(web.View):
+    def __init__(self, request, *args):
+        super().__init__(request)
 
-    title = 'Create new stub'
+        self.action_url = request.app.router['add_stub'].url_for()
+        self.current_url = request.rel_url
+        self.home_url = request.app.router['home'].url_for()
 
-    return {
+        self.db = request.app['sqlite_db']
+        self.cursor = request.app['db_cursor']
+
+    @aiohttp_jinja2.template('updateStub.html')
+    async def get(self):
+        title = 'Create new stub'
+
+        return {
             "stub": [],
-            "action_url": action_url,
+            "action_url": self.action_url,
             "title": title
         }
 
+    async def post(self):
+        data = await self._request.post()
 
-async def add_stub_post(request):
-    current_url = request.rel_url
-    home_url = request.app.router['home'].url_for()
-    db = request.app['sqlite_db']
-    cursor = request.app['db_cursor']
-    data = await request.post()
+        if not data.get("url") or not data.get("content"):
+            # flash("Incorrect data", "error")
+            return web.HTTPFound(self.current_url)
 
-    if not data.get("url") or not data.get("content"):
-        # flash("Incorrect data", "error")
-        return web.HTTPFound(current_url)
+        try:
+            # # Insert a row of data
+            self.cursor.execute("""INSERT INTO stubs (
+                    stubbed_url,
+                    content,
+                    timestamp,
+                    ip
+                ) VALUES (?,?,?,?)""", (
+                    data.get("url"),
+                    data.get("content"),
+                    str(datetime.datetime.now()),
+                    # request.remote_addr)
+                    'ip here')
+                )
+            self.db.commit()
 
-    try:
-        # # Insert a row of data
-        cursor.execute("""INSERT INTO stubs (
-                stubbed_url,
-                content,
-                timestamp,
-                ip
-            ) VALUES (?,?,?,?)""", (
-                data.get("url"),
-                data.get("content"),
-                str(datetime.datetime.now()),
-                # request.remote_addr)
-                'ip here')
-            )
-        db.commit()
+        except sqlite3.IntegrityError:
+            # flash("Such stub already exists", "error")
+            return web.HTTPFound(self.home_url)
 
-    except sqlite3.IntegrityError:
-        # flash("Such stub already exists", "error")
-        return web.HTTPFound(home_url)
-
-    # flash("Url added successfully")
-    return web.HTTPFound(home_url)
+        # flash("Url added successfully")
+        return web.HTTPFound(self.home_url)
 
 
-@aiohttp_jinja2.template('updateStub.html')
-def edit_stub_get(request):
-    cursor = request.app['db_cursor']
-    stubbed_url = request.match_info['stubbed_url']
+class UpdateStub(web.View):
+    def __init__(self, request):
+        super().__init__(request)
 
-    cursor.execute("select * from stubs where stubbed_url=?", (stubbed_url,))
-    entry = cursor.fetchone()
+        self.cursor = request.app['db_cursor']
+        self.db = request.app['sqlite_db']
 
-    edit_stub_url = request.app.router['edit_stub_post'].url_for(stubbed_url=stubbed_url)
-    home_url = request.app.router['home'].url_for()
+        self.stubbed_url = request.match_info['stubbed_url']
 
-    if not entry:
-        # flash("No such stub, sorry", "error")
-        return web.HTTPFound(home_url)
+        self.edit_stub_url = request.app.router['edit_stub']\
+            .url_for(stubbed_url=self.stubbed_url)
+
+        self.home_url = request.app.router['home'].url_for()
+
+    @aiohttp_jinja2.template('updateStub.html')
+    def get(self):
+        self.cursor.execute("""SELECT *
+                                FROM stubs
+                                WHERE stubbed_url=?""",
+                            (self.stubbed_url,)
+                            )
+        entry = self.cursor.fetchone()
+
+        if not entry:
+            # flash("No such stub, sorry", "error")
+            return web.HTTPFound(self.home_url)
+
+        title = 'Update stub'
+
+        return {
+           "stub": entry,
+           "action_url": self.edit_stub_url,
+           "title": title
+        }
+
+    async def post(self):
+        data = await self._request.post()
+
+        if not data.get("url") or not data.get("content"):
+            # flash("Incorrect data", "error")
+            return web.HTTPFound(self.edit_stub_url)
+
+        try:
+            self.cursor.execute("""UPDATE stubs
+                                   SET stubbed_url = ?,
+                                       content = ?,
+                                       timestamp = ?,
+                                       ip = ?
+                                   WHERE id =? """, (
+                                        data.get('url'),
+                                        data.get('content'),
+                                        str(datetime.datetime.now()),
+                                        'ip here',
+                                        data.get('id'),))
+
+            self.db.commit()
+            # flash("Stub updated succesfully")
+        except sqlite3.IntegrityError:
+            # flash("Such stub already exists", "error")
+            return web.HTTPFound(self.edit_stub_url)
+
+        except:
+            # flash("OOps, an error occupied, sorry", "error")
+            pass
+
+        return web.HTTPFound(self.home_url)
 
 
-    title = 'Update stub'
+class Stub(web.View):
+    def __init__(self, request):
+        super().__init__(request)
 
-    return {
-       "stub": entry,
-       "action_url": edit_stub_url,
-       "title": title
-    }
+        self.cursor = request.app['db_cursor']
+        self.db = request.app['sqlite_db']
 
+        self.home_url = request.app.router['home'].url_for()
+        self.stubbed_url = request.match_info['stubbed_url']
 
-async def edit_stub_post(request):
-    data = await request.post()
-    stubbed_url = request.match_info['stubbed_url']
-    home_url = request.app.router['home'].url_for()
-    edit_stub_url = request.app.router['edit_stub_get'].url_for(stubbed_url=stubbed_url)
-    db = request.app['sqlite_db']
-    cursor = request.app['db_cursor']
+    def get_entry(self, stubbed_url):
+        self.cursor.execute("""SELECT *
+                            FROM stubs
+                            WHERE stubbed_url=?""",
+                            (stubbed_url,))
+        return self.cursor.fetchone()
 
-    print(data)
+    async def get(self):
+        entry = self.get_entry(self.stubbed_url)
 
-    if not data.get("url") or not data.get("content"):
-        # flash("Incorrect data", "error")
-        return web.HTTPFound(edit_stub_url)
+        if entry:
+            try:
+                return web.json_response(json.loads(entry[2]))
+            except:
+                return web.Response(text=entry[2])
 
-    try:
-        cursor.execute("""UPDATE stubs
-                               SET stubbed_url = ?,
-                                   content = ?,
-                                   timestamp = ?,
-                                   ip = ?
-                               WHERE id =? """, (
-                                    data.get('url'),
-                                    data.get('content'),
-                                    str(datetime.datetime.now()),
-                                    'ip here',
-                                    data.get('id'),))
+        else:
+            # flash("No such stub, sorry", "error")
+            print("No such stub, sorry", "error")
+        return web.HTTPFound(self.home_url)
 
-        db.commit()
-        # flash("Stub updated succesfully")
-    except sqlite3.IntegrityError:
-        # flash("Such stub already exists", "error")
-        return web.HTTPFound(edit_stub_url)
+    async def post(self):
+        data = await self._request.post()
 
-    except:
-        # flash("OOps, an error occupied, sorry", "error")
-        pass
+        if data.get('_method') == 'DELETE':
+            try:
+                self.cursor.execute("""DELETE
+                                       FROM stubs
+                                       WHERE id=?""",
+                                    (data.get('id'),))
+                self.db.commit()
+                # flash("Stub removed succesfully")
+                print("Stub removed succesfully")
+            except:
+                # flash("OOps, an error occupied, sorry", "error")
+                print("OOps, an error occupied, sorry", "error")
+                pass
+            finally:
+                return web.HTTPFound(self.home_url)
 
-    return web.HTTPFound(home_url)
+        return self.get()
