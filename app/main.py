@@ -3,12 +3,27 @@ from aiohttp import web
 import aiohttp_jinja2
 import jinja2
 from aiohttp_jinja2 import APP_KEY as JINJA2_APP_KEY
-
+import sqlite3
 from .router import setup_routes
-
+from .middlewares import connect_db
 
 THIS_DIR = Path(__file__).parent
 BASE_DIR = THIS_DIR.parent
+
+
+def create_db(app):
+    conn = sqlite3.connect("stubs.db")
+    c = conn.cursor()
+
+    c.execute("""CREATE TABLE if not exists stubs
+                 (id integer primary key,
+                  stubbed_url text unique,
+                  content text,
+                  timestamp text,
+                  ip text)""")
+
+    conn.commit()
+    conn.close()
 
 
 @jinja2.contextfilter
@@ -59,7 +74,13 @@ def static_url(context, static_file_path):
         raise RuntimeError('app does not define a static root url "static_root_url"')
     return '{}/{}'.format(static_url.rstrip('/'), static_file_path.lstrip('/'))
 
-app = web.Application()
+app = web.Application(
+    middlewares=[
+        connect_db
+    ]
+)
+
+app.on_startup.append(create_db)
 
 app['static_root_url'] = 'static'
 
