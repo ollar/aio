@@ -1,0 +1,8 @@
+FROM python:latest
+
+ADD ./requirments.txt /app/requirments.txt
+WORKDIR /app
+RUN pip install -r requirments.txt
+WORKDIR /
+
+CMD GUNICORN_CMD_ARGS="--bind=0.0.0.0 --workers=1" gunicorn app.main:app --worker-class aiohttp.worker.GunicornWebWorker

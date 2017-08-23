@@ -3,7 +3,6 @@ import aiohttp_jinja2
 import datetime
 import sqlite3
 import json
-import pdb
 
 
 @aiohttp_jinja2.template('home.html')

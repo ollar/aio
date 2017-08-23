@@ -1,0 +1,13 @@
+server:
+  build: .
+  dockerfile: pythonDockerfile
+
+  volumes:
+    - ./app:/app
+
+  working_dir: /
+
+  ports:
+    - "7978:8000"
+
+  mem_limit: 64m
