@@ -1,4 +1,6 @@
 import sqlite3
+from functools import partial
+from .utils import flash
 
 async def connect_db(app, handler):
     async def middleware_handler(request):
@@ -14,3 +16,11 @@ async def connect_db(app, handler):
 
     return middleware_handler
 
+
+async def flashes_middleware(app, handler):
+    async def middleware_handler(request):
+        request['_flash'] = partial(flash, request)
+
+        return await handler(request)
+
+    return middleware_handler

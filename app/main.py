@@ -1,12 +1,11 @@
 from pathlib import Path
 from aiohttp import web
-import aiohttp_session
 import aiohttp_jinja2
 import jinja2
 from aiohttp_jinja2 import APP_KEY as JINJA2_APP_KEY
 import sqlite3
 from .router import setup_routes
-from .middlewares import connect_db
+from .middlewares import connect_db, flashes_middleware
 
 THIS_DIR = Path(__file__).parent
 BASE_DIR = THIS_DIR.parent
@@ -25,6 +24,13 @@ def create_db(app):
 
     conn.commit()
     conn.close()
+
+
+def setup_messages(app):
+    if not hasattr(app, '_flash_messages'):
+        app['_flash_messages'] = []
+
+    return app
 
 
 @jinja2.contextfilter
@@ -77,21 +83,17 @@ def static_url(context, static_file_path):
 
 
 @jinja2.contextfunction
-def test(context):
-    # session = aiohttp_session.get_session(context)
+def get_flash_messages(context):
+    _flash_messages = context['app'].get('_flash_messages', [])
 
-    print('abc', dir(context['app']))
-    return 'aaaaaa'
+    if len(_flash_messages) > 0:
+        yield _flash_messages.pop()
 
-
-session_middleware = aiohttp_session.session_middleware(
-    aiohttp_session.SimpleCookieStorage()
-)
 
 app = web.Application(
     middlewares=[
         connect_db,
-        session_middleware
+        flashes_middleware
     ]
 )
 
@@ -100,6 +102,7 @@ app.on_startup.append(create_db)
 app['static_root_url'] = 'static'
 
 setup_routes(app)
+setup_messages(app)
 
 jinja2_loader = jinja2.FileSystemLoader(str(THIS_DIR / 'templates'))
 
@@ -110,5 +113,5 @@ app[JINJA2_APP_KEY].filters.update(
 )
 
 app[JINJA2_APP_KEY].globals.update(
-    test=test
+    get_flash_messages=get_flash_messages
 )

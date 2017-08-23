@@ -2,7 +2,6 @@ aiohttp==2.2.5
 aiohttp-debugtoolbar==0.4.0
 aiohttp-devtools==0.5
 aiohttp-jinja2==0.13.0
-aiohttp-session==1.0.0
 argh==0.26.2
 async-timeout==1.2.1
 chardet==3.0.4

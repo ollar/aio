@@ -4,7 +4,6 @@ import datetime
 import sqlite3
 import json
 import pdb
-from aiohttp_session import get_session
 
 
 @aiohttp_jinja2.template('home.html')
@@ -12,10 +11,6 @@ async def index(request):
     cursor = request.app['db_cursor']
     cursor.execute("select * from stubs")
     urls = cursor.fetchall()
-
-    session = await get_session(request)
-
-    # print(session)
 
     return {
         "urls": urls
@@ -47,7 +42,7 @@ class AddStub(web.View):
         data = await self._request.post()
 
         if not data.get("url") or not data.get("content"):
-            # flash("Incorrect data", "error")
+            self._request['_flash']("Incorrect data", "error")
             return web.HTTPFound(self.current_url)
 
         try:
@@ -67,10 +62,10 @@ class AddStub(web.View):
             self.db.commit()
 
         except sqlite3.IntegrityError:
-            # flash("Such stub already exists", "error")
+            self._request['_flash']("Such stub already exists", "error")
             return web.HTTPFound(self.home_url)
 
-        # flash("Url added successfully")
+        self._request['_flash']("Url added successfully")
         return web.HTTPFound(self.home_url)
 
 
@@ -98,7 +93,7 @@ class UpdateStub(web.View):
         entry = self.cursor.fetchone()
 
         if not entry:
-            # flash("No such stub, sorry", "error")
+            self._request['_flash']("No such stub, sorry", "error")
             return web.HTTPFound(self.home_url)
 
         title = 'Update stub'
@@ -113,7 +108,7 @@ class UpdateStub(web.View):
         data = await self._request.post()
 
         if not data.get("url") or not data.get("content"):
-            # flash("Incorrect data", "error")
+            self._request['_flash']("Incorrect data", "error")
             return web.HTTPFound(self.edit_stub_url)
 
         try:
@@ -130,14 +125,13 @@ class UpdateStub(web.View):
                                         data.get('id'),))
 
             self.db.commit()
-            # flash("Stub updated succesfully")
+            self._request['_flash']("Stub updated succesfully")
         except sqlite3.IntegrityError:
-            # flash("Such stub already exists", "error")
+            self._request['_flash']("Such stub already exists", "error")
             return web.HTTPFound(self.edit_stub_url)
 
         except:
-            # flash("OOps, an error occupied, sorry", "error")
-            pass
+            self._request['_flash']("OOps, an error occupied, sorry", "error")
 
         return web.HTTPFound(self.home_url)
 
@@ -169,8 +163,8 @@ class Stub(web.View):
                 return web.Response(text=entry[2])
 
         else:
-            # flash("No such stub, sorry", "error")
-            print("No such stub, sorry", "error")
+            self._request['_flash']("No such stub, sorry", "error")
+
         return web.HTTPFound(self.home_url)
 
     async def post(self):
@@ -183,12 +177,11 @@ class Stub(web.View):
                                        WHERE id=?""",
                                     (data.get('id'),))
                 self.db.commit()
-                # flash("Stub removed succesfully")
-                print("Stub removed succesfully")
+                self._request['_flash']("Stub removed succesfully")
+
             except:
-                # flash("OOps, an error occupied, sorry", "error")
-                print("OOps, an error occupied, sorry", "error")
-                pass
+                self._request['_flash']("OOps, an error occupied, sorry", "error")
+
             finally:
                 return web.HTTPFound(self.home_url)
 
