@@ -102,7 +102,7 @@ app = web.Application(
 
 app.on_startup.append(create_db)
 
-app['static_root_url'] = 'static'
+app['static_root_url'] = '/static/'
 
 setup_routes(app)
 
