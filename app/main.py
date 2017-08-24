@@ -28,13 +28,6 @@ def create_db(app):
     conn.close()
 
 
-def setup_messages(app):
-    if not hasattr(app, '_flash_messages'):
-        app['_flash_messages'] = []
-
-    return app
-
-
 @jinja2.contextfilter
 def reverse_url(context, name, **parts):
     """
@@ -86,7 +79,7 @@ def static_url(context, static_file_path):
 
 @jinja2.contextfunction
 def get_flash_messages(context):
-    _flash_messages = context['request']['session']['_flash_messages']
+    _flash_messages = context['request']['session'].get('_flash_messages', [])
 
     while len(_flash_messages) > 0:
         yield _flash_messages.pop()
@@ -112,7 +105,6 @@ app.on_startup.append(create_db)
 app['static_root_url'] = 'static'
 
 setup_routes(app)
-setup_messages(app)
 
 jinja2_loader = jinja2.FileSystemLoader(str(THIS_DIR / 'templates'))
 
