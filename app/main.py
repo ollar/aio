@@ -5,7 +5,9 @@ import jinja2
 from aiohttp_jinja2 import APP_KEY as JINJA2_APP_KEY
 import sqlite3
 from .router import setup_routes
-from .middlewares import connect_db, flashes_middleware
+from .middlewares import connect_db, session_middleware
+import aiohttp_session
+
 
 THIS_DIR = Path(__file__).parent
 BASE_DIR = THIS_DIR.parent
@@ -84,16 +86,24 @@ def static_url(context, static_file_path):
 
 @jinja2.contextfunction
 def get_flash_messages(context):
-    _flash_messages = context['app'].get('_flash_messages', [])
+    _flash_messages = context['request']['session']['_flash_messages']
 
-    if len(_flash_messages) > 0:
+    while len(_flash_messages) > 0:
         yield _flash_messages.pop()
+
+    context['request']['session']['_flash_messages'] = []
+
+
+aiohttp_session_middleware = aiohttp_session.session_middleware(
+    aiohttp_session.SimpleCookieStorage()
+)
 
 
 app = web.Application(
     middlewares=[
         connect_db,
-        flashes_middleware
+        aiohttp_session_middleware,
+        session_middleware
     ]
 )
 
@@ -106,7 +116,11 @@ setup_messages(app)
 
 jinja2_loader = jinja2.FileSystemLoader(str(THIS_DIR / 'templates'))
 
-aiohttp_jinja2.setup(app, loader=jinja2_loader, app_key=JINJA2_APP_KEY)
+aiohttp_jinja2.setup(app,
+    loader=jinja2_loader,
+    context_processors=[aiohttp_jinja2.request_processor],
+    app_key=JINJA2_APP_KEY)
+
 app[JINJA2_APP_KEY].filters.update(
     url=reverse_url,
     static=static_url,

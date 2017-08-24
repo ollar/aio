@@ -3,6 +3,7 @@ import aiohttp_jinja2
 import datetime
 import sqlite3
 import json
+from .utils import flash
 
 
 @aiohttp_jinja2.template('home.html')
@@ -41,7 +42,7 @@ class AddStub(web.View):
         data = await self._request.post()
 
         if not data.get("url") or not data.get("content"):
-            self._request['_flash']("Incorrect data", "error")
+            flash(self._request, "Incorrect data", "error")
             return web.HTTPFound(self.current_url)
 
         try:
@@ -61,10 +62,10 @@ class AddStub(web.View):
             self.db.commit()
 
         except sqlite3.IntegrityError:
-            self._request['_flash']("Such stub already exists", "error")
+            flash(self._request, "Such stub already exists", "error")
             return web.HTTPFound(self.home_url)
 
-        self._request['_flash']("Url added successfully")
+        flash(self._request, "Url added successfully")
         return web.HTTPFound(self.home_url)
 
 
@@ -92,7 +93,7 @@ class UpdateStub(web.View):
         entry = self.cursor.fetchone()
 
         if not entry:
-            self._request['_flash']("No such stub, sorry", "error")
+            flash(self._request, "No such stub, sorry", "error")
             return web.HTTPFound(self.home_url)
 
         title = 'Update stub'
@@ -107,7 +108,7 @@ class UpdateStub(web.View):
         data = await self._request.post()
 
         if not data.get("url") or not data.get("content"):
-            self._request['_flash']("Incorrect data", "error")
+            flash(self._request, "Incorrect data", "error")
             return web.HTTPFound(self.edit_stub_url)
 
         try:
@@ -124,13 +125,13 @@ class UpdateStub(web.View):
                                         data.get('id'),))
 
             self.db.commit()
-            self._request['_flash']("Stub updated succesfully")
+            flash(self._request, "Stub updated succesfully")
         except sqlite3.IntegrityError:
-            self._request['_flash']("Such stub already exists", "error")
+            flash(self._request, "Such stub already exists", "error")
             return web.HTTPFound(self.edit_stub_url)
 
         except:
-            self._request['_flash']("OOps, an error occupied, sorry", "error")
+            flash(self._request, "OOps, an error occupied, sorry", "error")
 
         return web.HTTPFound(self.home_url)
 
@@ -162,7 +163,7 @@ class Stub(web.View):
                 return web.Response(text=entry[2])
 
         else:
-            self._request['_flash']("No such stub, sorry", "error")
+            flash(self._request, "No such stub, sorry", "error")
 
         return web.HTTPFound(self.home_url)
 
@@ -176,10 +177,10 @@ class Stub(web.View):
                                        WHERE id=?""",
                                     (data.get('id'),))
                 self.db.commit()
-                self._request['_flash']("Stub removed succesfully")
+                flash(self._request, "Stub removed succesfully")
 
             except:
-                self._request['_flash']("OOps, an error occupied, sorry", "error")
+                flash(self._request, "OOps, an error occupied, sorry", "error")
 
             finally:
                 return web.HTTPFound(self.home_url)

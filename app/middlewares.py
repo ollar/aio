@@ -1,6 +1,8 @@
 import sqlite3
 from functools import partial
 from .utils import flash
+from aiohttp_session import get_session
+
 
 async def connect_db(app, handler):
     async def middleware_handler(request):
@@ -17,9 +19,10 @@ async def connect_db(app, handler):
     return middleware_handler
 
 
-async def flashes_middleware(app, handler):
+async def session_middleware(app, handler):
     async def middleware_handler(request):
-        request['_flash'] = partial(flash, request)
+        session = await get_session(request)
+        request['session'] = session
 
         return await handler(request)
 
