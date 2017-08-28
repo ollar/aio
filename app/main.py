@@ -7,6 +7,7 @@ import sqlite3
 from .router import setup_routes
 from .middlewares import connect_db, session_middleware
 import aiohttp_session
+import aiohttp_cors
 
 
 THIS_DIR = Path(__file__).parent
