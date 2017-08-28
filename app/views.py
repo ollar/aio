@@ -185,4 +185,10 @@ class Stub(web.View):
             finally:
                 return web.HTTPFound(self.home_url)
 
-        return self.get()
+        return await self.get()
+
+    async def put(self):
+        return await self.get()
+
+    async def delete(self):
+        return await self.get()
