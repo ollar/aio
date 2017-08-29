@@ -153,6 +153,9 @@ class Stub(web.View):
                             (stubbed_url,))
         return self.cursor.fetchone()
 
+    async def options(self, *args, **kwargs):
+        return web.Response()
+
     async def get(self):
         entry = self.get_entry(self.stubbed_url)
 
