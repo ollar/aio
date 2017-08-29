@@ -154,7 +154,9 @@ class Stub(web.View):
         return self.cursor.fetchone()
 
     async def options(self, *args, **kwargs):
-        return web.Response()
+        return web.Response(headers={
+            'Access-Control-Allow-Headers': self._request.headers.get('Access-Control-Request-Headers', '')
+        })
 
     async def get(self):
         entry = self.get_entry(self.stubbed_url)

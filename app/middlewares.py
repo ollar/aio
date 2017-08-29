@@ -33,8 +33,7 @@ async def cors_middleware(app, handler):
     async def middleware_handler(request):
         headers = {
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': '*',
-            'Access-Control-Allow-Headers': 'authToken,If-None-Match,pageId,Content-Type'
+            'Access-Control-Allow-Methods': '*'
         }
 
         response = await handler(request)
