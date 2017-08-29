@@ -5,9 +5,8 @@ import jinja2
 from aiohttp_jinja2 import APP_KEY as JINJA2_APP_KEY
 import sqlite3
 from .router import setup_routes
-from .middlewares import connect_db, session_middleware
+from .middlewares import connect_db, session_middleware, cors_middleware
 import aiohttp_session
-import aiohttp_cors
 
 
 THIS_DIR = Path(__file__).parent
@@ -97,7 +96,8 @@ app = web.Application(
     middlewares=[
         connect_db,
         aiohttp_session_middleware,
-        session_middleware
+        session_middleware,
+        cors_middleware
     ]
 )
 

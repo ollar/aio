@@ -27,3 +27,20 @@ async def session_middleware(app, handler):
         return await handler(request)
 
     return middleware_handler
+
+
+async def cors_middleware(app, handler):
+    async def middleware_handler(request):
+        headers = {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': '*',
+            'Access-Control-Allow-Headers': 'authToken,If-None-Match,pageId,Content-Type'
+        }
+
+        response = await handler(request)
+
+        response.headers.update(headers)
+
+        return response
+
+    return middleware_handler
