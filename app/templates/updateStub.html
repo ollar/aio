@@ -23,3 +23,9 @@
 
 </form>
 {% endblock %}
+
+{% block pagescripts %}
+{{super()}}
+
+<script type="text/javascript" src="{{'js/textarea.js'|static}}"></script>
+{% endblock %}
