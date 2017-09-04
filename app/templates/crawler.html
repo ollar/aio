@@ -1,0 +1,29 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <h1>Run crawler</h1>
+
+    <form action={{action_url}} method="POST">
+        <div class="form-line">
+            <label for="base-url">Base Url</label>
+            <input type="text" name="base-url" id="base-url" value="">
+        </div>
+
+        <div class="form-line">
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" value="">
+        </div>
+
+        <div class="form-line">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" value="">
+        </div>
+
+        <div class="buttons-wrapper">
+            <button class="submit" type="submit">
+                Submit
+            </button>
+        </div>
+    </form>
+
+{% endblock %}

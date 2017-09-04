@@ -4,6 +4,7 @@ import datetime
 import sqlite3
 import json
 from .utils import flash
+from .crawler import Crawler
 
 
 @aiohttp_jinja2.template('home.html')
@@ -197,3 +198,33 @@ class Stub(web.View):
 
     async def delete(self):
         return await self.get()
+
+
+class CrawlerManager(web.View):
+    def __init__(self, request):
+        super().__init__(request)
+
+        self.action_url = request.app.router['crawler']\
+            .url_for()
+
+    @aiohttp_jinja2.template('crawler.html')
+    def get(self):
+        print(self._request.app.loop)
+
+        return {
+            'action_url': self.action_url,
+        }
+
+    async def post(self):
+        data = await self._request.post()
+
+        if not data.get("base-url") or not data.get("username") or not data.get("password"):
+            flash(self._request, "Incorrect data", "error")
+            return web.HTTPFound(self.action_url)
+
+        crawler = Crawler(**data)
+        await crawler()
+
+        return web.HTTPFound(self.action_url)
+
+
