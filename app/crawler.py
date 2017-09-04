@@ -1,7 +1,6 @@
 import asyncio
 import aiohttp
 import urllib.parse
-import pdb
 import json
 import datetime
 import sqlite3
@@ -14,12 +13,28 @@ class Crawler():
     GET_LINKS = [
         'configs',
         'currencies/rates/exchange',
-        'news?_sort=beginShowDate-&_sort=dateTime-',
-        'banners?isMobile=true',
+        'news',
+        'banners',
         'points/types',
         'points/operationTypes',
         'points?_offset=0&_limit=1000',
-        'cards'
+        'cards',
+        'accounts',
+        'deposits',
+        'users',
+        'users/services',
+        'users/notifications',
+        'users/photo',
+        'mails/input',
+        'deposits/offers',
+        'operations',
+        'schedules/2017-09-04T19:47:47/2017-10-01T20:59:59',
+        'cards/bins',
+        'budgetAccountMasks',
+        'credits',
+        'services',
+        'invoices',
+        'pushNotifications',
     ]
     POST_LINKS = [
 
@@ -39,6 +54,11 @@ class Crawler():
             await self.request_token()
         await self.login(requisites={'username': self.username, 'password': self.password})
         await self.fetch_multiple_pages(self.GET_LINKS)
+
+        try:
+            self.db.commit()
+        except:
+            print('OOps, an error occupied, sorry. Can\'t save entry')
 
     async def request_token(self):
         token = await self.fetch_page(self.TOKEN_LINK, _fetching_token=True)
@@ -63,11 +83,14 @@ class Crawler():
 
         full_url = urllib.parse.urljoin(self.BASE_URL, url)
         async with aiohttp.ClientSession() as session:
-            async with getattr(session, method)(full_url, headers=headers, data=json.dumps(data)) as response:
+            async with getattr(session, method)(full_url,
+                                                headers=headers,
+                                                data=json.dumps(data)
+                                                ) as response:
                 print(full_url, response.status)
 
                 if response.status != 200:
-                    print('OOps, something wrong')
+                    print('OOps, server sent error response')
                     print(await response.text())
                     return
 
@@ -114,14 +137,11 @@ class Crawler():
                                             'ip here',
                                             url,))
 
-                self.db.commit()
             except sqlite3.IntegrityError:
                 print('sqlite3.IntegrityError')
-                # return web.HTTPFound(self.edit_stub_url)
 
             except:
-                print('OOps, an error occupied, sorry')
-                # flash(self._request, "OOps, an error occupied, sorry", "error")
+                print('OOps, an error occupied, sorry. Can\'t save entry')
         else:
             try:
                 # # Insert a row of data
@@ -137,11 +157,9 @@ class Crawler():
                         # request.remote_addr)
                         'ip here')
                     )
-                self.db.commit()
 
             except sqlite3.IntegrityError:
                 print("Such stub already exists")
-                # flash(self._request, "Such stub already exists", "error")
 
 
 if __name__ == '__main__':
