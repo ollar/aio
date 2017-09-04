@@ -206,11 +206,13 @@ class CrawlerManager(web.View):
 
         self.action_url = request.app.router['crawler']\
             .url_for()
+        self.home_url = request.app.router['home'].url_for()
+
+        self.db = request.app['sqlite_db']
+        self.cursor = request.app['db_cursor']
 
     @aiohttp_jinja2.template('crawler.html')
     def get(self):
-        print(self._request.app.loop)
-
         return {
             'action_url': self.action_url,
         }
@@ -222,9 +224,9 @@ class CrawlerManager(web.View):
             flash(self._request, "Incorrect data", "error")
             return web.HTTPFound(self.action_url)
 
-        crawler = Crawler(**data)
+        crawler = Crawler(db=self.db, cursor=self.cursor, **data)
         await crawler()
 
-        return web.HTTPFound(self.action_url)
+        return web.HTTPFound(self.home_url)
 
 

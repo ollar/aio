@@ -192,3 +192,25 @@ textarea:active {
 .flashes li.error {
     color: crimson;
 }
+
+/* ====================================================================== Nav */
+
+nav {
+
+}
+
+.menu {
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+
+.menu li {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.menu a {
+    display: inline-block;
+    padding: 5px;
+}

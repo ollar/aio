@@ -3,6 +3,8 @@ import aiohttp
 import urllib.parse
 import pdb
 import json
+import datetime
+import sqlite3
 
 
 class Crawler():
@@ -28,6 +30,9 @@ class Crawler():
             self.BASE_URL = base_url
         self.username = kwargs.get('username')
         self.password = kwargs.get('password')
+
+        self.db = kwargs.get('db')
+        self.cursor = kwargs.get('cursor')
 
     async def __call__(self):
         if not self.ACCESS_TOKEN:
@@ -70,6 +75,9 @@ class Crawler():
 
                 if resp.get('result') == False:
                     print(resp)
+                    return
+
+                self.dump_data(url, resp)
 
                 return resp
 
@@ -81,6 +89,60 @@ class Crawler():
 
         self.running_group = asyncio.gather(*tasks)
         await self.running_group
+
+    def _get_entry(self, stubbed_url):
+        self.cursor.execute("""SELECT *
+                            FROM stubs
+                            WHERE stubbed_url=?""",
+                            (stubbed_url,))
+        return self.cursor.fetchone()
+
+    def dump_data(self, url, data):
+        stub = self._get_entry(url)
+
+        if stub:
+            try:
+                self.cursor.execute("""UPDATE stubs
+                                       SET stubbed_url = ?,
+                                           content = ?,
+                                           timestamp = ?,
+                                           ip = ?
+                                       WHERE stubbed_url =? """, (
+                                            url,
+                                            json.dumps(data),
+                                            str(datetime.datetime.now()),
+                                            'ip here',
+                                            url,))
+
+                self.db.commit()
+            except sqlite3.IntegrityError:
+                print('sqlite3.IntegrityError')
+                # return web.HTTPFound(self.edit_stub_url)
+
+            except:
+                print('OOps, an error occupied, sorry')
+                # flash(self._request, "OOps, an error occupied, sorry", "error")
+        else:
+            try:
+                # # Insert a row of data
+                self.cursor.execute("""INSERT INTO stubs (
+                        stubbed_url,
+                        content,
+                        timestamp,
+                        ip
+                    ) VALUES (?,?,?,?)""", (
+                        url,
+                        json.dumps(data),
+                        str(datetime.datetime.now()),
+                        # request.remote_addr)
+                        'ip here')
+                    )
+                self.db.commit()
+
+            except sqlite3.IntegrityError:
+                print("Such stub already exists")
+                # flash(self._request, "Such stub already exists", "error")
+
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

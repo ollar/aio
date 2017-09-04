@@ -25,6 +25,19 @@
                 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
             <![endif]-->
 
+            {% block nav %}
+                <nav>
+                    <ul class="menu">
+                        <li>
+                            <a href="{{'home'|url}}">Home</a>
+                        </li>
+                        <li>
+                            <a href="{{'crawler'|url}}">Make a rude crawl</a>
+                        </li>
+                    </ul>
+                </nav>
+            {% endblock %}
+
             <ul class=flashes>
                 {% for message, category in get_flash_messages() %}
                     <li class="{{ category }}">{{ message }}</li>
