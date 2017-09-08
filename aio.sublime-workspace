@@ -179,6 +179,15 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "app/crawler.py",
+			"settings":
+			{
+				"buffer_size": 5408,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -285,6 +294,7 @@
 	],
 	"file_history":
 	[
+		"/Users/bss/Documents/Projects/aio/app/crawler.py",
 		"/Users/bss/Documents/Projects/aio/app/views.py",
 		"/Users/bss/Documents/Projects/aio/app/main.py",
 		"/Users/bss/Documents/Projects/aio/app/middlewares.py",
@@ -411,8 +421,7 @@
 		"/Users/ollar/Documents/dev/scetch-shop/app/styles/functions/_em.scss",
 		"/Users/ollar/Documents/dev/scetch-shop/app/styles/_functions.scss",
 		"/Users/ollar/Documents/dev/scetch-shop/app/styles/_buttons.scss",
-		"/Users/ollar/Documents/dev/scetch-shop/app/styles/component-styles/image-drop-area.scss",
-		"/Users/ollar/Documents/dev/scetch-shop/bower_components/pure/buttons.css"
+		"/Users/ollar/Documents/dev/scetch-shop/app/styles/component-styles/image-drop-area.scss"
 	],
 	"find":
 	{
@@ -432,6 +441,7 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"inquiryTypes",
 			"index",
 			"Settings",
 			"static_url",
@@ -558,8 +568,7 @@
 			"function",
 			"catController",
 			"images",
-			"blocks",
-			"category"
+			"blocks"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -571,14 +580,47 @@
 		"reverse": false,
 		"show_context": true,
 		"use_buffer2": true,
-		"whole_word": true,
+		"whole_word": false,
 		"wrap": true
 	},
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "app/crawler.py",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5408,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								584,
+								584
+							]
+						],
+						"settings":
+						{
+							"color_scheme": "Packages/User/Color Highlighter/themes/Tomorrow-Night-Bright (SL).tmTheme",
+							"git_gutter_is_enabled": true,
+							"syntax": "Packages/Python/Python.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 158.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
 			]
 		}
 	],

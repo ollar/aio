@@ -224,8 +224,6 @@ class CrawlerManager(web.View):
             flash(self._request, "Incorrect data", "error")
             return web.HTTPFound(self.action_url)
 
-        print(data)
-
         crawler = Crawler(db=self.db, cursor=self.cursor, **data)
         await crawler()
 

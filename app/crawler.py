@@ -35,6 +35,8 @@ class Crawler():
         'services',
         'invoices',
         'pushNotifications',
+        'services/checkLoginSession',
+        'inquiryTypes'
     ]
     POST_LINKS = [
 
