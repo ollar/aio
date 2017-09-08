@@ -40,9 +40,10 @@ class Crawler():
 
     ]
 
-    def __init__(self, base_url=None, *args, **kwargs):
-        if base_url:
-            self.BASE_URL = base_url
+    def __init__(self, *args, **kwargs):
+        if kwargs.get('base-url'):
+            self.BASE_URL = kwargs.get('base-url')
+
         self.username = kwargs.get('username')
         self.password = kwargs.get('password')
 
