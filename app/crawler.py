@@ -19,6 +19,7 @@ class Crawler():
         'points/operationTypes',
         'points?_offset=0&_limit=1000',
         'cards',
+        'cards/cardTerms'
         'accounts',
         'deposits',
         'users',
@@ -36,10 +37,12 @@ class Crawler():
         'invoices',
         'pushNotifications',
         'services/checkLoginSession',
-        'inquiryTypes'
+        'inquiryTypes',
+        'cards/_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl/statement/2017-09-13T08:47:00/2017-09-20T08:47:00'
     ]
     POST_LINKS = [
-
+        ('operations/search', {"filter":{"and":[{"or":[{"column":"toId","op":"=","value":"_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl"},{"column":"fromId","op":"=","value":"_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl"}]}]},"limit":100,"offset":0}),
+        ('serviceOperations/search', {"filter":{"and":[{"column":"targetId","op":"=","value":"_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl"}]},"limit":100,"offset":0}),
     ]
 
     def __init__(self, *args, **kwargs):
