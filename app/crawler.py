@@ -38,7 +38,10 @@ class Crawler():
         'pushNotifications',
         'services/checkLoginSession',
         'inquiryTypes',
-        'cards/_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl/statement/2017-09-13T08:47:00/2017-09-20T08:47:00'
+        'cards/_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl/statement/2017-09-13T08:47:00/2017-09-20T08:47:00',
+        'countries',
+        'bankServices',
+        'transfers/trustedRecipients',
     ]
     POST_LINKS = [
         ('operations/search', {"filter":{"and":[{"or":[{"column":"toId","op":"=","value":"_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl"},{"column":"fromId","op":"=","value":"_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl"}]}]},"limit":100,"offset":0}),
