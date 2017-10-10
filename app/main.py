@@ -98,7 +98,8 @@ app = web.Application(
         aiohttp_session_middleware,
         session_middleware,
         cors_middleware
-    ]
+    ],
+    client_max_size = 10 * 1024 * 1024
 )
 
 app.on_startup.append(create_db)
