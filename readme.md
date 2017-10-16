@@ -4,12 +4,12 @@ Scrapes data from my work server to create its static copy.
 
 Installation with pipenv:
 
-`pipenv install`
-`pipenv shell`
-`python run_dev.py`
+- `pipenv install`
+- `pipenv shell`
+- `python run_dev.py`
 
 Installation with python env:
 
-`python3 -m venv venv`
-`. venv/bin/activate`
-`python run_dev.py`
+- `python3 -m venv venv`
+- `. venv/bin/activate`
+- `python run_dev.py`
