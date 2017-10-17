@@ -12,4 +12,5 @@ Installation with python env:
 
 - `python3 -m venv venv`
 - `. venv/bin/activate`
+- `pip install -r requirments.txt`
 - `python run_dev.py`
