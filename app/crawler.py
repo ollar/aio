@@ -4,53 +4,22 @@ import urllib.parse
 import json
 import datetime
 import sqlite3
+from .links import GET_LINKS, POST_LINKS
 
 
 class Crawler():
-    BASE_URL = 'https://devapicorreqts.bssys.com/api/v1/'
+    BASE_URL = 'https://devapicorreqts.bssys.com/'
+    API_SUFFIX = 'api/v1/'
     TOKEN_LINK = 'auth/tokens'
     ACCESS_TOKEN = None
-    GET_LINKS = [
-        'configs',
-        'currencies/rates/exchange',
-        'news',
-        'banners',
-        'points/types',
-        'points/operationTypes',
-        'points?_offset=0&_limit=1000',
-        'cards',
-        'cards/cardTerms'
-        'accounts',
-        'deposits',
-        'users',
-        'users/services',
-        'users/notifications',
-        'users/photo',
-        'mails/input',
-        'deposits/offers',
-        'operations',
-        'schedules/2017-09-04T19:47:47/2017-10-01T20:59:59',
-        'cards/bins',
-        'budgetAccountMasks',
-        'credits',
-        'services',
-        'invoices',
-        'pushNotifications',
-        'services/checkLoginSession',
-        'inquiryTypes',
-        'cards/_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl/statement/2017-09-13T08:47:00/2017-09-20T08:47:00',
-        'countries',
-        'bankServices',
-        'transfers/trustedRecipients',
-    ]
-    POST_LINKS = [
-        ('operations/search', {"filter":{"and":[{"or":[{"column":"toId","op":"=","value":"_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl"},{"column":"fromId","op":"=","value":"_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl"}]}]},"limit":100,"offset":0}),
-        ('serviceOperations/search', {"filter":{"and":[{"column":"targetId","op":"=","value":"_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl"}]},"limit":100,"offset":0}),
-    ]
+    GET_LINKS = GET_LINKS
+    POST_LINKS = POST_LINKS
 
     def __init__(self, *args, **kwargs):
         if kwargs.get('base-url'):
             self.BASE_URL = kwargs.get('base-url')
+
+        self.BASE_URL = urllib.parse.urljoin(self.BASE_URL, self.API_SUFFIX)
 
         self.username = kwargs.get('username')
         self.password = kwargs.get('password')
@@ -91,6 +60,7 @@ class Crawler():
             }
 
         full_url = urllib.parse.urljoin(self.BASE_URL, url)
+        print(8, self.BASE_URL, url, full_url)
         async with aiohttp.ClientSession() as session:
             async with getattr(session, method)(full_url,
                                                 headers=headers,
@@ -104,6 +74,8 @@ class Crawler():
                     return
 
                 resp = await response.json()
+
+                print(resp)
 
                 if resp.get('result') == False:
                     print(resp)
