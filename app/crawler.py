@@ -5,6 +5,7 @@ import json
 import datetime
 import sqlite3
 from .links import GET_LINKS, POST_LINKS
+from functools import partial
 
 
 class Crawler():
@@ -49,8 +50,7 @@ class Crawler():
         await self.fetch_page('auth/login', method='post', data=requisites)
 
     async def handle_list(self, _list, url):
-        # Semaphore
-        url_list = ('{}/{}'.format(url, _url.get('id')) for _url in _list)
+        url_list = ['{}/{}'.format(url, _url.get('id')) for _url in _list]
         async with self.semaphore:
             await self.fetch_multiple_pages(url_list)
 
@@ -69,6 +69,7 @@ class Crawler():
             }
 
         full_url = urllib.parse.urljoin(self.BASE_URL, url)
+        # async with self.semaphore:
         async with aiohttp.ClientSession() as session:
             async with getattr(session, method)(full_url,
                                                 headers=headers,
@@ -102,8 +103,7 @@ class Crawler():
 
         self.running_group = asyncio.gather(*tasks)
 
-        async with self.semaphore:
-            await self.running_group
+        await self.running_group
 
     def _get_entry(self, stubbed_url):
         self.cursor.execute("""SELECT *
