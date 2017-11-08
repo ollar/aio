@@ -39,10 +39,28 @@ a:hover {
     display: flex;
     margin: 5px 0;
     align-items: center;
+    background-image: radial-gradient(#ccc 0, #ccc 1px, #fff 1px, #fff);
+    background-size: 6px 6px;
+    background-repeat: repeat-x;
+    background-position: center 17px;
+}
+
+.list .edit-link {
+    background-color: #fff;
+    box-shadow: -5px 0 0 0px #fff;
+}
+
+.list form {
+    background-color: #fff;
 }
 
 .list .title {
     margin-right: auto;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: #fff;
+    box-shadow: 5px 0 0 0px #fff;
 }
 
 .list .delete {

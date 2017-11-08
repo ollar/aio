@@ -8,7 +8,7 @@ from .links import GET_LINKS, POST_LINKS
 
 
 class Crawler():
-    BASE_URL = 'https://devapicorreqts.bssys.com/'
+    BASE_URL = 'https://devapicorreqts.bssys.com'
     API_SUFFIX = 'api/v1/'
     TOKEN_LINK = 'auth/tokens'
     ACCESS_TOKEN = None
@@ -18,6 +18,9 @@ class Crawler():
     def __init__(self, *args, **kwargs):
         if kwargs.get('base-url'):
             self.BASE_URL = kwargs.get('base-url')
+
+        self.loop = kwargs.get('loop')
+        self.semaphore = asyncio.Semaphore(10, loop=self.loop)
 
         self.BASE_URL = urllib.parse.urljoin(self.BASE_URL, self.API_SUFFIX)
 
@@ -45,6 +48,12 @@ class Crawler():
     async def login(self, requisites):
         await self.fetch_page('auth/login', method='post', data=requisites)
 
+    async def handle_list(self, _list, url):
+        # Semaphore
+        url_list = ('{}/{}'.format(url, _url.get('id')) for _url in _list)
+        async with self.semaphore:
+            await self.fetch_multiple_pages(url_list)
+
     async def fetch_page(self, url, method='get', _fetching_token=False, data={}):
         if not self.ACCESS_TOKEN and not _fetching_token:
             print(self.ACCESS_TOKEN)
@@ -60,7 +69,6 @@ class Crawler():
             }
 
         full_url = urllib.parse.urljoin(self.BASE_URL, url)
-        print(8, self.BASE_URL, url, full_url)
         async with aiohttp.ClientSession() as session:
             async with getattr(session, method)(full_url,
                                                 headers=headers,
@@ -75,7 +83,8 @@ class Crawler():
 
                 resp = await response.json()
 
-                print(resp)
+                if resp.get('list'):
+                    await self.handle_list(resp.get('list'), url)
 
                 if resp.get('result') == False:
                     print(resp)
@@ -92,7 +101,9 @@ class Crawler():
             tasks.append(self.fetch_page(url))
 
         self.running_group = asyncio.gather(*tasks)
-        await self.running_group
+
+        async with self.semaphore:
+            await self.running_group
 
     def _get_entry(self, stubbed_url):
         self.cursor.execute("""SELECT *
