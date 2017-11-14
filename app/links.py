@@ -28,7 +28,7 @@ GET_LINKS = [
     'services/checkLoginSession',
     'inquiryTypes',
     'cards/_0gXAahgdchUIPVI57xIklVnu_du0c-780IIRfcBjCStSEEE6Iymc0GU0Fwl/statement/2017-09-13T08:47:00/2017-09-20T08:47:00',
-    # 'countries',
+    'countries',
     'bankServices',
     'transfers/trustedRecipients',
 ]

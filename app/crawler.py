@@ -21,7 +21,7 @@ class Crawler():
             self.BASE_URL = kwargs.get('base-url')
 
         self.loop = kwargs.get('loop')
-        self.semaphore = asyncio.Semaphore(10, loop=self.loop)
+        self.semaphore = asyncio.Semaphore(100, loop=self.loop)
 
         self.BASE_URL = urllib.parse.urljoin(self.BASE_URL, self.API_SUFFIX)
 
@@ -51,8 +51,26 @@ class Crawler():
 
     async def handle_list(self, _list, url):
         url_list = ['{}/{}'.format(url, _url.get('id')) for _url in _list]
-        async with self.semaphore:
-            await self.fetch_multiple_pages(url_list)
+        return await self.fetch_multiple_pages(url_list)
+
+    async def handle_response(self, response, url):
+        if response.status != 200:
+            print('OOps, server sent error response')
+            print(await response.text())
+            return
+
+        resp = await response.json()
+
+        if resp.get('list'):
+            await self.handle_list(resp.get('list'), url)
+
+        if resp.get('result') == False:
+            print(resp)
+            return
+
+        self.dump_data(url, resp)
+
+        return resp
 
     async def fetch_page(self, url, method='get', _fetching_token=False, data={}):
         if not self.ACCESS_TOKEN and not _fetching_token:
@@ -69,31 +87,15 @@ class Crawler():
             }
 
         full_url = urllib.parse.urljoin(self.BASE_URL, url)
-        # async with self.semaphore:
-        async with aiohttp.ClientSession() as session:
-            async with getattr(session, method)(full_url,
-                                                headers=headers,
-                                                data=json.dumps(data)
-                                                ) as response:
-                print(full_url, response.status)
+        with (await self.semaphore):
+            async with aiohttp.ClientSession() as session:
+                async with getattr(session, method)(full_url,
+                                                    headers=headers,
+                                                    data=json.dumps(data)
+                                                    ) as response:
+                    print(full_url, response.status)
 
-                if response.status != 200:
-                    print('OOps, server sent error response')
-                    print(await response.text())
-                    return
-
-                resp = await response.json()
-
-                if resp.get('list'):
-                    await self.handle_list(resp.get('list'), url)
-
-                if resp.get('result') == False:
-                    print(resp)
-                    return
-
-                self.dump_data(url, resp)
-
-                return resp
+                    return await self.handle_response(response, url)
 
     async def fetch_multiple_pages(self, sources=[]):
         tasks = []
@@ -103,7 +105,7 @@ class Crawler():
 
         self.running_group = asyncio.gather(*tasks)
 
-        await self.running_group
+        return await self.running_group
 
     def _get_entry(self, stubbed_url):
         self.cursor.execute("""SELECT *
@@ -152,6 +154,8 @@ class Crawler():
 
             except sqlite3.IntegrityError:
                 print("Such stub already exists")
+
+        return True
 
 
 if __name__ == '__main__':
