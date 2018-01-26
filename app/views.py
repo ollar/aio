@@ -171,6 +171,9 @@ class Stub(web.View):
         else:
             flash(self._request, "No such stub, sorry", "error")
 
+        if self._request.headers['Content-Type'] == 'application/json':
+            return web.json_response({'error': 'not_found'})
+
         return web.HTTPFound(self.home_url)
 
     async def post(self):
