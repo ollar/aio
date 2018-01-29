@@ -199,6 +199,9 @@ class Stub(web.View):
     async def put(self):
         return await self.get(True)
 
+    async def patch(self):
+        return await self.get(True)
+
     async def delete(self):
         return await self.get(True)
 
