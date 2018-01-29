@@ -159,7 +159,7 @@ class Stub(web.View):
             'Access-Control-Allow-Headers': self._request.headers.get('Access-Control-Request-Headers', '')
         })
 
-    async def get(self, is_redirect: False):
+    async def get(self, is_redirect=False):
         entry = self.get_entry(self.stubbed_url)
 
         if entry:
