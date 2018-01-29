@@ -159,7 +159,7 @@ class Stub(web.View):
             'Access-Control-Allow-Headers': self._request.headers.get('Access-Control-Request-Headers', '')
         })
 
-    async def get(self):
+    async def get(self, is_redirect: False):
         entry = self.get_entry(self.stubbed_url)
 
         if entry:
@@ -171,7 +171,7 @@ class Stub(web.View):
         else:
             flash(self._request, "No such stub, sorry", "error")
 
-        if self._request.headers['Content-Type'] == 'application/json':
+        if is_redirect:
             return web.json_response({'error': 'not_found'})
 
         return web.HTTPFound(self.home_url)
@@ -194,13 +194,13 @@ class Stub(web.View):
             finally:
                 return web.HTTPFound(self.home_url)
 
-        return await self.get()
+        return await self.get(True)
 
     async def put(self):
-        return await self.get()
+        return await self.get(True)
 
     async def delete(self):
-        return await self.get()
+        return await self.get(True)
 
 
 class CrawlerManager(web.View):
