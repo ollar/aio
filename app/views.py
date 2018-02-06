@@ -6,6 +6,7 @@ import json
 from .utils import flash
 from .crawler import Crawler
 
+import asyncio
 
 @aiohttp_jinja2.template('home.html')
 async def index(request):
@@ -163,6 +164,7 @@ class Stub(web.View):
         entry = self.get_entry(self.stubbed_url)
 
         if entry:
+            await asyncio.sleep(1)
             try:
                 return web.json_response(json.loads(entry[2]))
             except:
@@ -171,8 +173,8 @@ class Stub(web.View):
         else:
             flash(self._request, "No such stub, sorry", "error")
 
-        if is_redirect:
-            return web.json_response({'error': 'not_found'})
+        if is_redirect or self._request.content_type == 'application/json':
+            return web.json_response({'error': 'not_found'}, status=404)
 
         return web.HTTPFound(self.home_url)
 
