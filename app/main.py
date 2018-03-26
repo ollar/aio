@@ -7,7 +7,10 @@ import sqlite3
 from .router import setup_routes
 from .middlewares import connect_db, session_middleware, cors_middleware
 import aiohttp_session
+import asyncio
 
+import uvloop
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 THIS_DIR = Path(__file__).parent
 BASE_DIR = THIS_DIR.parent
