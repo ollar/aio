@@ -33,7 +33,8 @@ async def cors_middleware(app, handler):
     async def middleware_handler(request):
         headers = {
             'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': '*'
+            'Access-Control-Allow-Methods': '*',
+            'Access-Control-Allow-Headers': request.headers.get('Access-Control-Request-Headers', '')
         }
 
         response = await handler(request)

@@ -156,15 +156,14 @@ class Stub(web.View):
         return self.cursor.fetchone()
 
     async def options(self, *args, **kwargs):
-        return web.Response(headers={
-            'Access-Control-Allow-Headers': self._request.headers.get('Access-Control-Request-Headers', '')
-        })
+        return web.Response()
 
     async def get(self, is_redirect=False):
+        await asyncio.sleep(1)
         entry = self.get_entry(self.stubbed_url)
 
         if entry:
-            await asyncio.sleep(1)
+            # await asyncio.sleep(1)
             try:
                 return web.json_response(json.loads(entry[2]))
             except:
