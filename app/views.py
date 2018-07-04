@@ -6,6 +6,8 @@ import json
 from .utils import flash
 from .crawler import Crawler
 
+from urllib.parse import quote
+
 import asyncio
 
 @aiohttp_jinja2.template('home.html')
@@ -55,7 +57,8 @@ class AddStub(web.View):
                     timestamp,
                     ip
                 ) VALUES (?,?,?,?)""", (
-                    data.get("url"),
+                    # data.get("url"),
+                    quote(data.get("url")),
                     data.get("content"),
                     str(datetime.datetime.now()),
                     # request.remote_addr)
@@ -120,7 +123,8 @@ class UpdateStub(web.View):
                                        timestamp = ?,
                                        ip = ?
                                    WHERE id =? """, (
-                                        data.get('url'),
+                                        # data.get('url'),
+                                        quote(data.get("url")),
                                         data.get('content'),
                                         str(datetime.datetime.now()),
                                         'ip here',
@@ -146,7 +150,7 @@ class Stub(web.View):
         self.db = request.app['sqlite_db']
 
         self.home_url = request.app.router['home'].url_for()
-        self.stubbed_url = request.match_info['stubbed_url']
+        self.stubbed_url = quote(request.match_info['stubbed_url'])
 
     def get_entry(self, stubbed_url):
         self.cursor.execute("""SELECT *
@@ -163,7 +167,6 @@ class Stub(web.View):
         entry = self.get_entry(self.stubbed_url)
 
         if entry:
-            # await asyncio.sleep(1)
             try:
                 return web.json_response(json.loads(entry[2]))
             except:
@@ -235,5 +238,3 @@ class CrawlerManager(web.View):
         await crawler()
 
         return web.HTTPFound(self.home_url)
-
-
