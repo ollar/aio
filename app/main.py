@@ -10,7 +10,7 @@ import aiohttp_session
 import asyncio
 
 import uvloop
-# asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 THIS_DIR = Path(__file__).parent
 BASE_DIR = THIS_DIR.parent
