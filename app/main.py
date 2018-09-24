@@ -10,13 +10,13 @@ import aiohttp_session
 import asyncio
 
 import uvloop
-asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+# asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
 THIS_DIR = Path(__file__).parent
 BASE_DIR = THIS_DIR.parent
 
 
-def create_db(app):
+async def create_db(app):
     conn = sqlite3.connect("stubs.db")
     c = conn.cursor()
 
@@ -55,7 +55,7 @@ def reverse_url(context, name, **parts):
         kwargs['query'] = parts.pop('query')
     if parts:
         kwargs['parts'] = parts
-    return app.router[name].url(**kwargs)
+    return app.router[name].url_for(**parts)
 
 
 @jinja2.contextfilter

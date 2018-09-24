@@ -1,5 +1,5 @@
 from app.main import app
-from aiohttp import web
+from aiohttp.web import run_app
 
 
-web.run_app(app, host="0.0.0.0", port=5001)
+run_app(app, host="0.0.0.0", port=5001)
