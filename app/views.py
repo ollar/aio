@@ -81,7 +81,7 @@ class UpdateStub(web.View):
         self.cursor = request.app['db_cursor']
         self.db = request.app['sqlite_db']
 
-        self.stubbed_url = request.match_info['stubbed_url']
+        self.stubbed_url = quote(request.match_info['stubbed_url'])
 
         self.edit_stub_url = request.app.router['edit_stub']\
             .url_for(stubbed_url=self.stubbed_url)
